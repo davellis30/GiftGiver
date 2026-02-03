@@ -11,10 +11,11 @@ A simple web app to keep track of gift ideas for your loved ones.
 - Data persists in browser local storage
 
 ### Gift Suggester (`gift-suggester.html`)
-- Enter your partner's last 10 purchases
+- Enter your partner's last 5 purchases
 - Set your budget for the gift
-- Get personalized gift recommendations based on their interests
-- Analyzes purchase patterns across categories (tech, fashion, beauty, etc.)
+- Analyzes purchases to detect interests (fitness, cooking, music, tech, etc.)
+- Generates new personalized gift ideas based on what they've bought
+- Each suggestion explains why it's a good fit
 
 ## Usage
 

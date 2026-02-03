@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 700px;
             margin: 0 auto;
         }
 
@@ -80,8 +80,7 @@
             font-weight: 500;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
@@ -90,41 +89,38 @@
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #e91e63;
         }
 
-        .purchase-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .purchase-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .purchase-item {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
-        .purchase-item input:first-child {
-            flex: 2;
-        }
-
-        .purchase-item select {
+        .purchase-item input {
             flex: 1;
         }
 
         .purchase-number {
-            background: #f0f0f0;
-            color: #666;
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            color: white;
             min-width: 30px;
-            height: 46px;
-            border-radius: 8px;
+            height: 30px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 0.9rem;
         }
 
         button {
@@ -143,12 +139,6 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
         }
 
         .budget-input {
@@ -175,46 +165,6 @@
             display: block;
         }
 
-        .suggestion {
-            background: linear-gradient(135deg, #fff5f8 0%, #fdf4ff 100%);
-            border: 2px solid #e91e63;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .suggestion h3 {
-            color: #e91e63;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-        }
-
-        .suggestion p {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .suggestion .price-range {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #9c27b0;
-        }
-
-        .interest-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 15px;
-        }
-
-        .tag {
-            background: #e91e63;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
         .analysis {
             background: #f8f9fa;
             border-radius: 8px;
@@ -227,30 +177,57 @@
             margin-bottom: 10px;
         }
 
-        .analysis ul {
-            list-style: none;
+        .analysis p {
             color: #666;
+            line-height: 1.6;
         }
 
-        .analysis li {
-            padding: 5px 0;
+        .detected-interests {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
         }
 
-        .analysis .bar {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 4px;
-            flex: 1;
-            margin-left: 15px;
-            overflow: hidden;
-        }
-
-        .analysis .bar-fill {
+        .interest-tag {
             background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
-            height: 100%;
-            border-radius: 4px;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .gift-idea {
+            background: linear-gradient(135deg, #fff5f8 0%, #fdf4ff 100%);
+            border: 2px solid #e91e63;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .gift-idea h3 {
+            color: #e91e63;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .gift-idea .reason {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .gift-idea .based-on {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+        }
+
+        .gift-idea .price-estimate {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #9c27b0;
         }
 
         .reset-btn {
@@ -258,10 +235,10 @@
             margin-top: 20px;
         }
 
-        @media (max-width: 768px) {
-            .purchase-grid {
-                grid-template-columns: 1fr;
-            }
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #666;
         }
     </style>
 </head>
@@ -269,254 +246,304 @@
     <div class="container">
         <header>
             <h1>Gift Suggester</h1>
-            <p>Find the perfect gift based on your partner's recent purchases</p>
+            <p>Get personalized gift ideas based on their recent purchases</p>
         </header>
 
         <form id="suggesterForm">
             <div class="card">
-                <h2><span class="step-number">1</span> Enter Their Last 10 Purchases</h2>
-                <p style="color: #666; margin-bottom: 20px;">Tell us what your significant other has bought recently. Select a category for each purchase to help us understand their interests.</p>
-                <div class="purchase-grid" id="purchaseGrid">
+                <h2><span class="step-number">1</span> Enter Their Last 5 Purchases</h2>
+                <p style="color: #666; margin-bottom: 20px;">What has your significant other bought recently? Be specific!</p>
+                <div class="purchase-list">
+                    <div class="purchase-item">
+                        <span class="purchase-number">1</span>
+                        <input type="text" id="purchase1" placeholder="e.g., Running shoes from Nike" required>
+                    </div>
+                    <div class="purchase-item">
+                        <span class="purchase-number">2</span>
+                        <input type="text" id="purchase2" placeholder="e.g., Cookbook for Italian recipes" required>
+                    </div>
+                    <div class="purchase-item">
+                        <span class="purchase-number">3</span>
+                        <input type="text" id="purchase3" placeholder="e.g., Wireless headphones" required>
+                    </div>
+                    <div class="purchase-item">
+                        <span class="purchase-number">4</span>
+                        <input type="text" id="purchase4" placeholder="e.g., Yoga mat" required>
+                    </div>
+                    <div class="purchase-item">
+                        <span class="purchase-number">5</span>
+                        <input type="text" id="purchase5" placeholder="e.g., Scented candles" required>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2><span class="step-number">2</span> Set Your Budget</h2>
-                <p style="color: #666; margin-bottom: 20px;">How much are you looking to spend on this gift?</p>
+                <h2><span class="step-number">2</span> What's Your Budget?</h2>
+                <p style="color: #666; margin-bottom: 20px;">How much do you want to spend on this gift?</p>
                 <div class="budget-input">
                     <span>$</span>
-                    <input type="number" id="budget" placeholder="Enter your budget" min="1" required>
+                    <input type="number" id="budget" placeholder="Enter amount" min="1" required>
                 </div>
             </div>
 
             <div class="card">
-                <button type="submit">Find Perfect Gift Ideas</button>
+                <button type="submit">Generate Gift Ideas</button>
             </div>
         </form>
 
         <div class="results card" id="results">
-            <h2>Gift Recommendations</h2>
+            <h2>Your Personalized Gift Ideas</h2>
 
-            <div class="analysis" id="analysis">
-                <h4>Interest Analysis</h4>
-                <ul id="interestList"></ul>
-            </div>
+            <div class="analysis" id="analysis"></div>
 
-            <div id="suggestions"></div>
+            <div id="giftIdeas"></div>
 
             <button type="button" class="reset-btn" onclick="resetForm()">Start Over</button>
         </div>
     </div>
 
     <script>
-        const categories = [
-            { value: 'fashion', label: 'Fashion & Clothing' },
-            { value: 'tech', label: 'Tech & Electronics' },
-            { value: 'beauty', label: 'Beauty & Skincare' },
-            { value: 'home', label: 'Home & Decor' },
-            { value: 'fitness', label: 'Fitness & Sports' },
-            { value: 'books', label: 'Books & Media' },
-            { value: 'food', label: 'Food & Dining' },
-            { value: 'hobby', label: 'Hobbies & Crafts' },
-            { value: 'travel', label: 'Travel & Outdoors' },
-            { value: 'jewelry', label: 'Jewelry & Accessories' }
-        ];
+        // Keywords mapped to interests/themes
+        const interestKeywords = {
+            fitness: ['running', 'shoes', 'nike', 'adidas', 'gym', 'workout', 'exercise', 'yoga', 'sports', 'athletic', 'fitness', 'weights', 'training', 'marathon', 'cycling', 'bike', 'swimming', 'hiking', 'outdoor'],
+            cooking: ['cookbook', 'kitchen', 'cooking', 'recipe', 'chef', 'baking', 'food', 'culinary', 'pan', 'pot', 'knife', 'utensil', 'spice', 'ingredient', 'gourmet'],
+            music: ['headphones', 'earbuds', 'speaker', 'music', 'vinyl', 'record', 'guitar', 'piano', 'instrument', 'concert', 'spotify', 'audio', 'sound'],
+            technology: ['phone', 'laptop', 'tablet', 'computer', 'gadget', 'tech', 'smart', 'wireless', 'bluetooth', 'electronic', 'gaming', 'console', 'app'],
+            reading: ['book', 'novel', 'reading', 'kindle', 'literature', 'magazine', 'journal', 'diary', 'writing', 'author', 'poetry'],
+            wellness: ['yoga', 'meditation', 'candle', 'spa', 'relaxation', 'aromatherapy', 'essential oil', 'skincare', 'self-care', 'bath', 'massage', 'wellness'],
+            fashion: ['clothes', 'dress', 'shirt', 'jeans', 'jacket', 'fashion', 'accessory', 'jewelry', 'watch', 'bag', 'purse', 'shoes', 'boots', 'scarf', 'hat'],
+            art: ['paint', 'canvas', 'art', 'craft', 'drawing', 'sketch', 'creative', 'pottery', 'sculpture', 'gallery', 'museum', 'design'],
+            travel: ['luggage', 'suitcase', 'travel', 'passport', 'trip', 'vacation', 'adventure', 'backpack', 'camping', 'hotel', 'flight'],
+            gardening: ['plant', 'garden', 'flower', 'seed', 'pot', 'succulent', 'herb', 'outdoor', 'nature', 'green'],
+            photography: ['camera', 'photo', 'photography', 'lens', 'tripod', 'film', 'polaroid', 'picture', 'portrait'],
+            gaming: ['game', 'gaming', 'playstation', 'xbox', 'nintendo', 'switch', 'controller', 'video game', 'console'],
+            coffee: ['coffee', 'espresso', 'latte', 'cafe', 'mug', 'beans', 'grinder', 'barista', 'tea'],
+            wine: ['wine', 'champagne', 'cocktail', 'bar', 'whiskey', 'spirits', 'brewery', 'beer', 'sommelier']
+        };
 
-        const giftIdeas = {
-            fashion: [
-                { name: 'Designer Handbag', minPrice: 100, maxPrice: 500, description: 'A stylish accessory they can use daily' },
-                { name: 'Cashmere Sweater', minPrice: 80, maxPrice: 300, description: 'Luxurious and cozy for any season' },
-                { name: 'Watch', minPrice: 50, maxPrice: 1000, description: 'A timeless piece they\'ll treasure' },
-                { name: 'Personalized Clothing Item', minPrice: 30, maxPrice: 150, description: 'Custom-made just for them' }
+        // Gift ideas generated based on detected interests
+        const giftGenerators = {
+            fitness: (budget, purchases) => [
+                { name: 'Premium Fitness Subscription', reason: 'Since they\'re into fitness gear, a premium workout app subscription or online training program would complement their active lifestyle.', minPrice: 30, maxPrice: 200 },
+                { name: 'Recovery Massage Gun', reason: 'After all that exercise, a quality massage gun will help with muscle recovery and show you care about their wellbeing.', minPrice: 80, maxPrice: 300 },
+                { name: 'Smart Water Bottle', reason: 'An insulated smart bottle that tracks hydration would be perfect for someone who takes fitness seriously.', minPrice: 25, maxPrice: 60 },
+                { name: 'Fitness Tracking Watch', reason: 'A smartwatch to track workouts, heart rate, and progress would be an upgrade they\'ll use daily.', minPrice: 100, maxPrice: 400 }
             ],
-            tech: [
-                { name: 'Wireless Earbuds', minPrice: 50, maxPrice: 300, description: 'Premium sound for music lovers' },
-                { name: 'Smart Watch', minPrice: 150, maxPrice: 500, description: 'Stay connected in style' },
-                { name: 'Tablet', minPrice: 200, maxPrice: 800, description: 'Perfect for entertainment and productivity' },
-                { name: 'Bluetooth Speaker', minPrice: 30, maxPrice: 200, description: 'Great sound anywhere they go' }
+            cooking: (budget, purchases) => [
+                { name: 'Cooking Class Experience', reason: 'Based on their interest in cooking, a hands-on class with a professional chef would be an unforgettable experience.', minPrice: 75, maxPrice: 250 },
+                { name: 'High-End Kitchen Gadget', reason: 'A quality stand mixer, food processor, or sous vide machine would elevate their cooking game.', minPrice: 100, maxPrice: 400 },
+                { name: 'Artisanal Spice Collection', reason: 'A curated collection of exotic spices from around the world to inspire new recipes.', minPrice: 40, maxPrice: 120 },
+                { name: 'Personalized Cutting Board', reason: 'A beautiful custom-engraved wooden cutting board they\'ll treasure in their kitchen.', minPrice: 50, maxPrice: 150 }
             ],
-            beauty: [
-                { name: 'Luxury Skincare Set', minPrice: 50, maxPrice: 300, description: 'Pamper them with premium products' },
-                { name: 'Perfume/Cologne', minPrice: 60, maxPrice: 250, description: 'A signature scent they\'ll love' },
-                { name: 'Spa Day Package', minPrice: 100, maxPrice: 400, description: 'A relaxing experience to unwind' },
-                { name: 'Makeup Palette', minPrice: 30, maxPrice: 100, description: 'New colors to explore' }
+            music: (budget, purchases) => [
+                { name: 'Concert Tickets', reason: 'They clearly love music - surprise them with tickets to see their favorite artist live!', minPrice: 50, maxPrice: 500 },
+                { name: 'Vinyl Record Subscription', reason: 'A monthly vinyl subscription service delivering curated records to their door.', minPrice: 25, maxPrice: 100 },
+                { name: 'Premium Headphone Stand', reason: 'A beautiful stand to display and organize their audio gear.', minPrice: 30, maxPrice: 80 },
+                { name: 'Portable Hi-Fi DAC', reason: 'Upgrade their listening experience with a quality digital-to-analog converter.', minPrice: 100, maxPrice: 300 }
             ],
-            home: [
-                { name: 'Cozy Throw Blanket', minPrice: 40, maxPrice: 150, description: 'Perfect for movie nights' },
-                { name: 'Scented Candle Set', minPrice: 30, maxPrice: 100, description: 'Create a relaxing atmosphere' },
-                { name: 'Coffee Machine', minPrice: 100, maxPrice: 500, description: 'Barista-quality drinks at home' },
-                { name: 'Art Print', minPrice: 50, maxPrice: 300, description: 'Beautiful decor for their space' }
+            technology: (budget, purchases) => [
+                { name: 'Smart Home Device', reason: 'They\'re into tech - a smart display, smart plugs, or voice assistant would fit right in.', minPrice: 50, maxPrice: 250 },
+                { name: 'Wireless Charging Station', reason: 'A sleek multi-device charging pad to keep all their gadgets powered up.', minPrice: 40, maxPrice: 120 },
+                { name: 'Tech Accessory Kit', reason: 'A premium set of cables, adapters, and organizers for the tech enthusiast.', minPrice: 30, maxPrice: 100 },
+                { name: 'Portable Power Bank', reason: 'A high-capacity power bank so they\'re never without a charge on the go.', minPrice: 40, maxPrice: 150 }
             ],
-            fitness: [
-                { name: 'Fitness Tracker', minPrice: 50, maxPrice: 250, description: 'Track progress toward their goals' },
-                { name: 'Yoga Mat Set', minPrice: 30, maxPrice: 100, description: 'Premium equipment for practice' },
-                { name: 'Athletic Wear', minPrice: 50, maxPrice: 200, description: 'Look good while working out' },
-                { name: 'Massage Gun', minPrice: 80, maxPrice: 300, description: 'Recovery after tough workouts' }
+            reading: (budget, purchases) => [
+                { name: 'E-Reader Device', reason: 'For the book lover, an e-reader means they can carry their entire library anywhere.', minPrice: 100, maxPrice: 300 },
+                { name: 'Book Subscription Box', reason: 'Monthly curated books delivered with bookish goodies based on their preferences.', minPrice: 30, maxPrice: 80 },
+                { name: 'Cozy Reading Accessories', reason: 'A beautiful book light, premium bookmark set, and cozy reading blanket bundle.', minPrice: 40, maxPrice: 120 },
+                { name: 'Signed First Edition', reason: 'Track down a signed copy from their favorite author - a true collector\'s item.', minPrice: 50, maxPrice: 500 }
             ],
-            books: [
-                { name: 'E-Reader', minPrice: 100, maxPrice: 300, description: 'Thousands of books in one device' },
-                { name: 'Book Subscription Box', minPrice: 30, maxPrice: 100, description: 'New reads delivered monthly' },
-                { name: 'First Edition Book', minPrice: 50, maxPrice: 500, description: 'A collector\'s item they\'ll cherish' },
-                { name: 'Audiobook Subscription', minPrice: 50, maxPrice: 150, description: 'Stories on the go' }
+            wellness: (budget, purchases) => [
+                { name: 'Spa Day Package', reason: 'They\'re clearly into self-care - treat them to a professional spa experience.', minPrice: 100, maxPrice: 400 },
+                { name: 'Meditation App Subscription', reason: 'A premium meditation app with guided sessions, sleep stories, and relaxation music.', minPrice: 50, maxPrice: 100 },
+                { name: 'Luxury Aromatherapy Set', reason: 'An essential oil diffuser with a collection of premium therapeutic oils.', minPrice: 60, maxPrice: 150 },
+                { name: 'Weighted Blanket', reason: 'A cozy weighted blanket for ultimate relaxation and better sleep.', minPrice: 80, maxPrice: 200 }
             ],
-            food: [
-                { name: 'Gourmet Food Basket', minPrice: 50, maxPrice: 200, description: 'Delicious treats to enjoy' },
-                { name: 'Cooking Class', minPrice: 75, maxPrice: 250, description: 'Learn new culinary skills together' },
-                { name: 'Restaurant Gift Card', minPrice: 50, maxPrice: 300, description: 'A special dinner out' },
-                { name: 'Wine/Spirits Collection', minPrice: 40, maxPrice: 200, description: 'Premium drinks to savor' }
+            fashion: (budget, purchases) => [
+                { name: 'Personal Styling Session', reason: 'A session with a professional stylist to refresh their wardrobe.', minPrice: 100, maxPrice: 300 },
+                { name: 'Quality Leather Accessory', reason: 'A beautiful leather wallet, bag, or belt that will age beautifully.', minPrice: 75, maxPrice: 350 },
+                { name: 'Jewelry Piece', reason: 'A meaningful piece of jewelry they can wear every day and think of you.', minPrice: 50, maxPrice: 500 },
+                { name: 'Designer Sunglasses', reason: 'A stylish pair of quality sunglasses they\'ll reach for year-round.', minPrice: 100, maxPrice: 400 }
             ],
-            hobby: [
-                { name: 'Craft Supply Kit', minPrice: 30, maxPrice: 150, description: 'Everything needed for their passion' },
-                { name: 'Workshop Class', minPrice: 50, maxPrice: 200, description: 'Learn something new together' },
-                { name: 'Hobby Equipment Upgrade', minPrice: 100, maxPrice: 500, description: 'Take their hobby to the next level' },
-                { name: 'Subscription Box', minPrice: 25, maxPrice: 100, description: 'Monthly supplies for their interest' }
+            art: (budget, purchases) => [
+                { name: 'Art Class or Workshop', reason: 'Since they\'re creative, a pottery, painting, or craft workshop would be inspiring.', minPrice: 50, maxPrice: 200 },
+                { name: 'Premium Art Supply Set', reason: 'Professional-grade supplies to take their creativity to the next level.', minPrice: 60, maxPrice: 250 },
+                { name: 'Custom Portrait Commission', reason: 'Commission an artist to create a portrait of you two together.', minPrice: 100, maxPrice: 500 },
+                { name: 'Museum Membership', reason: 'Annual membership to their favorite art museum with special exhibition access.', minPrice: 75, maxPrice: 200 }
             ],
-            travel: [
-                { name: 'Quality Luggage', minPrice: 100, maxPrice: 400, description: 'Travel in style' },
-                { name: 'Weekend Getaway', minPrice: 200, maxPrice: 1000, description: 'Create memories together' },
-                { name: 'Travel Accessories Set', minPrice: 50, maxPrice: 150, description: 'Everything for the perfect trip' },
-                { name: 'Experience Voucher', minPrice: 75, maxPrice: 300, description: 'Adventure awaits' }
+            travel: (budget, purchases) => [
+                { name: 'Weekend Getaway', reason: 'Plan a surprise trip to somewhere they\'ve always wanted to go!', minPrice: 200, maxPrice: 1000 },
+                { name: 'Premium Travel Accessories', reason: 'A packing cube set, travel pillow, or noise-canceling headphones for their adventures.', minPrice: 50, maxPrice: 200 },
+                { name: 'Experience Voucher', reason: 'A voucher for a local adventure - hot air balloon, zip-lining, or food tour.', minPrice: 75, maxPrice: 300 },
+                { name: 'Personalized Travel Journal', reason: 'A beautiful leather-bound journal to document their adventures.', minPrice: 40, maxPrice: 100 }
             ],
-            jewelry: [
-                { name: 'Necklace', minPrice: 50, maxPrice: 500, description: 'An elegant piece they\'ll adore' },
-                { name: 'Bracelet', minPrice: 40, maxPrice: 300, description: 'A beautiful daily reminder of your love' },
-                { name: 'Earrings', minPrice: 30, maxPrice: 400, description: 'Sparkle and shine' },
-                { name: 'Custom Engraved Jewelry', minPrice: 75, maxPrice: 350, description: 'Personalized and meaningful' }
+            gardening: (budget, purchases) => [
+                { name: 'Indoor Herb Garden Kit', reason: 'A smart indoor garden system to grow fresh herbs year-round.', minPrice: 80, maxPrice: 200 },
+                { name: 'Rare Plant or Bouquet Subscription', reason: 'Monthly delivery of beautiful flowers or a rare houseplant they\'ll love.', minPrice: 40, maxPrice: 150 },
+                { name: 'Quality Garden Tools', reason: 'A set of premium, ergonomic garden tools that will last for years.', minPrice: 50, maxPrice: 180 },
+                { name: 'Botanical Art Print', reason: 'Beautiful botanical illustrations to bring nature indoors.', minPrice: 30, maxPrice: 150 }
+            ],
+            photography: (budget, purchases) => [
+                { name: 'Photo Printing Service Credit', reason: 'Credit for a premium printing service to turn their photos into art.', minPrice: 50, maxPrice: 200 },
+                { name: 'Camera Accessories Kit', reason: 'A quality camera strap, lens filters, or memory cards to enhance their setup.', minPrice: 40, maxPrice: 150 },
+                { name: 'Photo Book of Your Memories', reason: 'Create a beautiful custom photo book of your best moments together.', minPrice: 60, maxPrice: 200 },
+                { name: 'Photography Workshop', reason: 'A class to learn new techniques from a professional photographer.', minPrice: 100, maxPrice: 300 }
+            ],
+            gaming: (budget, purchases) => [
+                { name: 'Gaming Headset', reason: 'A quality headset with great audio and a good mic for their gaming sessions.', minPrice: 60, maxPrice: 250 },
+                { name: 'Game Subscription Service', reason: 'A year of Xbox Game Pass, PlayStation Plus, or Nintendo Online.', minPrice: 60, maxPrice: 120 },
+                { name: 'Gaming Chair or Accessories', reason: 'Upgrade their setup with a comfortable chair or LED lighting.', minPrice: 100, maxPrice: 400 },
+                { name: 'Collectible or Merchandise', reason: 'Limited edition merchandise from their favorite game franchise.', minPrice: 30, maxPrice: 200 }
+            ],
+            coffee: (budget, purchases) => [
+                { name: 'Premium Coffee Subscription', reason: 'Monthly deliveries of specialty beans from roasters around the world.', minPrice: 30, maxPrice: 100 },
+                { name: 'Quality Coffee Equipment', reason: 'A pour-over set, French press, or espresso machine upgrade.', minPrice: 50, maxPrice: 400 },
+                { name: 'Barista Class', reason: 'Learn the art of espresso and latte art from a professional barista.', minPrice: 75, maxPrice: 200 },
+                { name: 'Artisanal Coffee Set', reason: 'A curated set of rare single-origin coffees with tasting notes.', minPrice: 40, maxPrice: 120 }
+            ],
+            wine: (budget, purchases) => [
+                { name: 'Wine Tasting Experience', reason: 'A visit to a local winery or a guided wine tasting dinner.', minPrice: 75, maxPrice: 250 },
+                { name: 'Wine Club Membership', reason: 'Monthly deliveries of curated wines to explore together.', minPrice: 50, maxPrice: 150 },
+                { name: 'Wine Accessories Set', reason: 'Premium aerator, quality glasses, or a beautiful wine rack.', minPrice: 40, maxPrice: 200 },
+                { name: 'Rare or Special Vintage', reason: 'A bottle from a significant year - like when you met or their birth year.', minPrice: 50, maxPrice: 500 }
             ]
         };
 
-        function initializePurchaseFields() {
-            const grid = document.getElementById('purchaseGrid');
-            grid.innerHTML = '';
+        function detectInterests(purchases) {
+            const detectedInterests = {};
+            const purchaseTexts = purchases.map(p => p.toLowerCase());
 
-            for (let i = 1; i <= 10; i++) {
-                const div = document.createElement('div');
-                div.className = 'purchase-item';
-                div.innerHTML = `
-                    <span class="purchase-number">${i}</span>
-                    <input type="text" id="purchase${i}" placeholder="What did they buy?">
-                    <select id="category${i}">
-                        <option value="">Category</option>
-                        ${categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
-                    </select>
-                `;
-                grid.appendChild(div);
-            }
-        }
+            for (const [interest, keywords] of Object.entries(interestKeywords)) {
+                let matchCount = 0;
+                const matchedPurchases = [];
 
-        function analyzePurchases() {
-            const categoryCount = {};
-            let totalPurchases = 0;
+                for (const purchase of purchaseTexts) {
+                    for (const keyword of keywords) {
+                        if (purchase.includes(keyword)) {
+                            matchCount++;
+                            if (!matchedPurchases.includes(purchase)) {
+                                matchedPurchases.push(purchase);
+                            }
+                            break;
+                        }
+                    }
+                }
 
-            for (let i = 1; i <= 10; i++) {
-                const purchase = document.getElementById(`purchase${i}`).value.trim();
-                const category = document.getElementById(`category${i}`).value;
-
-                if (purchase && category) {
-                    categoryCount[category] = (categoryCount[category] || 0) + 1;
-                    totalPurchases++;
+                if (matchCount > 0) {
+                    detectedInterests[interest] = { count: matchCount, purchases: matchedPurchases };
                 }
             }
 
-            return { categoryCount, totalPurchases };
+            return detectedInterests;
         }
 
-        function getSuggestions(categoryCount, budget) {
-            const sortedCategories = Object.entries(categoryCount)
-                .sort((a, b) => b[1] - a[1]);
+        function generateGiftIdeas(interests, budget, purchases) {
+            const ideas = [];
+            const sortedInterests = Object.entries(interests).sort((a, b) => b[1].count - a[1].count);
 
-            const suggestions = [];
-            const addedGifts = new Set();
+            for (const [interest, data] of sortedInterests) {
+                if (giftGenerators[interest]) {
+                    const interestGifts = giftGenerators[interest](budget, data.purchases);
 
-            for (const [category] of sortedCategories) {
-                const categoryGifts = giftIdeas[category] || [];
-
-                for (const gift of categoryGifts) {
-                    if (!addedGifts.has(gift.name) && budget >= gift.minPrice) {
-                        const adjustedMax = Math.min(gift.maxPrice, budget);
-                        suggestions.push({
-                            ...gift,
-                            category,
-                            priceRange: `$${gift.minPrice} - $${adjustedMax}`
-                        });
-                        addedGifts.add(gift.name);
+                    for (const gift of interestGifts) {
+                        if (budget >= gift.minPrice && !ideas.find(i => i.name === gift.name)) {
+                            ideas.push({
+                                ...gift,
+                                interest,
+                                basedOn: data.purchases
+                            });
+                        }
                     }
                 }
             }
 
-            return suggestions.slice(0, 5);
+            // Sort by how well they fit the budget (prefer gifts that use more of the budget without exceeding)
+            ideas.sort((a, b) => {
+                const aFit = Math.min(budget, a.maxPrice) / budget;
+                const bFit = Math.min(budget, b.maxPrice) / budget;
+                return bFit - aFit;
+            });
+
+            return ideas.slice(0, 4);
         }
 
-        function displayResults(analysis, budget) {
-            const { categoryCount, totalPurchases } = analysis;
+        function formatInterestName(interest) {
+            return interest.charAt(0).toUpperCase() + interest.slice(1);
+        }
 
-            if (totalPurchases < 3) {
-                alert('Please enter at least 3 purchases with categories for better recommendations.');
+        document.getElementById('suggesterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const purchases = [];
+            for (let i = 1; i <= 5; i++) {
+                const value = document.getElementById(`purchase${i}`).value.trim();
+                if (value) purchases.push(value);
+            }
+
+            const budget = parseFloat(document.getElementById('budget').value);
+
+            if (purchases.length < 5) {
+                alert('Please enter all 5 purchases.');
                 return;
             }
 
-            const interestList = document.getElementById('interestList');
-            const sortedCategories = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]);
+            if (!budget || budget <= 0) {
+                alert('Please enter a valid budget.');
+                return;
+            }
 
-            interestList.innerHTML = sortedCategories.map(([cat, count]) => {
-                const percentage = (count / totalPurchases) * 100;
-                const label = categories.find(c => c.value === cat)?.label || cat;
-                return `
-                    <li>
-                        <span>${label}</span>
-                        <span>${count} purchase${count > 1 ? 's' : ''}</span>
-                        <div class="bar"><div class="bar-fill" style="width: ${percentage}%"></div></div>
-                    </li>
-                `;
-            }).join('');
+            const interests = detectInterests(purchases);
+            const ideas = generateGiftIdeas(interests, budget, purchases);
 
-            const suggestions = getSuggestions(categoryCount, budget);
-            const suggestionsDiv = document.getElementById('suggestions');
+            // Display analysis
+            const analysisDiv = document.getElementById('analysis');
+            const interestNames = Object.keys(interests);
 
-            if (suggestions.length === 0) {
-                suggestionsDiv.innerHTML = `
-                    <div class="suggestion">
-                        <h3>Budget Too Low</h3>
-                        <p>We couldn't find gift ideas within your budget of $${budget}. Try increasing your budget for more options.</p>
+            if (interestNames.length > 0) {
+                analysisDiv.innerHTML = `
+                    <h4>What We Learned About Them</h4>
+                    <p>Based on their purchases, they seem to be interested in:</p>
+                    <div class="detected-interests">
+                        ${interestNames.map(i => `<span class="interest-tag">${formatInterestName(i)}</span>`).join('')}
                     </div>
                 `;
             } else {
-                suggestionsDiv.innerHTML = suggestions.map((gift, index) => `
-                    <div class="suggestion">
-                        <h3>${index + 1}. ${gift.name}</h3>
-                        <p>${gift.description}</p>
-                        <p class="price-range">Price Range: ${gift.priceRange}</p>
-                        <div class="interest-tags">
-                            <span class="tag">${categories.find(c => c.value === gift.category)?.label || gift.category}</span>
-                        </div>
+                analysisDiv.innerHTML = `
+                    <h4>Generating Ideas</h4>
+                    <p>We're creating unique suggestions based on their specific purchases.</p>
+                `;
+            }
+
+            // Display gift ideas
+            const ideasDiv = document.getElementById('giftIdeas');
+
+            if (ideas.length === 0) {
+                ideasDiv.innerHTML = `
+                    <div class="no-results">
+                        <h3>No matches found</h3>
+                        <p>Try entering more specific purchase descriptions or adjusting your budget.</p>
+                    </div>
+                `;
+            } else {
+                ideasDiv.innerHTML = ideas.map((idea, index) => `
+                    <div class="gift-idea">
+                        <h3>${index + 1}. ${idea.name}</h3>
+                        <p class="reason">${idea.reason}</p>
+                        <p class="based-on">Based on: "${idea.basedOn[0]}"</p>
+                        <p class="price-estimate">Estimated: $${idea.minPrice} - $${Math.min(idea.maxPrice, budget)}</p>
                     </div>
                 `).join('');
             }
 
             document.getElementById('results').classList.add('show');
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
+        });
 
         function resetForm() {
             document.getElementById('suggesterForm').reset();
             document.getElementById('results').classList.remove('show');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        document.getElementById('suggesterForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const budget = parseFloat(document.getElementById('budget').value);
-            if (!budget || budget <= 0) {
-                alert('Please enter a valid budget.');
-                return;
-            }
-
-            const analysis = analyzePurchases();
-            displayResults(analysis, budget);
-        });
-
-        initializePurchaseFields();
     </script>
 </body>
 </html>
