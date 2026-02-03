@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Suggester - GiftGiver</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #e91e63;
+        }
+
+        .purchase-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .purchase-item {
+            display: flex;
+            gap: 10px;
+        }
+
+        .purchase-item input:first-child {
+            flex: 2;
+        }
+
+        .purchase-item select {
+            flex: 1;
+        }
+
+        .purchase-number {
+            background: #f0f0f0;
+            color: #666;
+            min-width: 30px;
+            height: 46px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        button {
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .budget-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .budget-input span {
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .budget-input input {
+            flex: 1;
+            font-size: 1.2rem;
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .suggestion {
+            background: linear-gradient(135deg, #fff5f8 0%, #fdf4ff 100%);
+            border: 2px solid #e91e63;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .suggestion h3 {
+            color: #e91e63;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .suggestion p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .suggestion .price-range {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #9c27b0;
+        }
+
+        .interest-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #e91e63;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .analysis {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analysis h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .analysis ul {
+            list-style: none;
+            color: #666;
+        }
+
+        .analysis li {
+            padding: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .analysis .bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            flex: 1;
+            margin-left: 15px;
+            overflow: hidden;
+        }
+
+        .analysis .bar-fill {
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .reset-btn {
+            background: #666;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .purchase-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gift Suggester</h1>
+            <p>Find the perfect gift based on your partner's recent purchases</p>
+        </header>
+
+        <form id="suggesterForm">
+            <div class="card">
+                <h2><span class="step-number">1</span> Enter Their Last 10 Purchases</h2>
+                <p style="color: #666; margin-bottom: 20px;">Tell us what your significant other has bought recently. Select a category for each purchase to help us understand their interests.</p>
+                <div class="purchase-grid" id="purchaseGrid">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><span class="step-number">2</span> Set Your Budget</h2>
+                <p style="color: #666; margin-bottom: 20px;">How much are you looking to spend on this gift?</p>
+                <div class="budget-input">
+                    <span>$</span>
+                    <input type="number" id="budget" placeholder="Enter your budget" min="1" required>
+                </div>
+            </div>
+
+            <div class="card">
+                <button type="submit">Find Perfect Gift Ideas</button>
+            </div>
+        </form>
+
+        <div class="results card" id="results">
+            <h2>Gift Recommendations</h2>
+
+            <div class="analysis" id="analysis">
+                <h4>Interest Analysis</h4>
+                <ul id="interestList"></ul>
+            </div>
+
+            <div id="suggestions"></div>
+
+            <button type="button" class="reset-btn" onclick="resetForm()">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            { value: 'fashion', label: 'Fashion & Clothing' },
+            { value: 'tech', label: 'Tech & Electronics' },
+            { value: 'beauty', label: 'Beauty & Skincare' },
+            { value: 'home', label: 'Home & Decor' },
+            { value: 'fitness', label: 'Fitness & Sports' },
+            { value: 'books', label: 'Books & Media' },
+            { value: 'food', label: 'Food & Dining' },
+            { value: 'hobby', label: 'Hobbies & Crafts' },
+            { value: 'travel', label: 'Travel & Outdoors' },
+            { value: 'jewelry', label: 'Jewelry & Accessories' }
+        ];
+
+        const giftIdeas = {
+            fashion: [
+                { name: 'Designer Handbag', minPrice: 100, maxPrice: 500, description: 'A stylish accessory they can use daily' },
+                { name: 'Cashmere Sweater', minPrice: 80, maxPrice: 300, description: 'Luxurious and cozy for any season' },
+                { name: 'Watch', minPrice: 50, maxPrice: 1000, description: 'A timeless piece they\'ll treasure' },
+                { name: 'Personalized Clothing Item', minPrice: 30, maxPrice: 150, description: 'Custom-made just for them' }
+            ],
+            tech: [
+                { name: 'Wireless Earbuds', minPrice: 50, maxPrice: 300, description: 'Premium sound for music lovers' },
+                { name: 'Smart Watch', minPrice: 150, maxPrice: 500, description: 'Stay connected in style' },
+                { name: 'Tablet', minPrice: 200, maxPrice: 800, description: 'Perfect for entertainment and productivity' },
+                { name: 'Bluetooth Speaker', minPrice: 30, maxPrice: 200, description: 'Great sound anywhere they go' }
+            ],
+            beauty: [
+                { name: 'Luxury Skincare Set', minPrice: 50, maxPrice: 300, description: 'Pamper them with premium products' },
+                { name: 'Perfume/Cologne', minPrice: 60, maxPrice: 250, description: 'A signature scent they\'ll love' },
+                { name: 'Spa Day Package', minPrice: 100, maxPrice: 400, description: 'A relaxing experience to unwind' },
+                { name: 'Makeup Palette', minPrice: 30, maxPrice: 100, description: 'New colors to explore' }
+            ],
+            home: [
+                { name: 'Cozy Throw Blanket', minPrice: 40, maxPrice: 150, description: 'Perfect for movie nights' },
+                { name: 'Scented Candle Set', minPrice: 30, maxPrice: 100, description: 'Create a relaxing atmosphere' },
+                { name: 'Coffee Machine', minPrice: 100, maxPrice: 500, description: 'Barista-quality drinks at home' },
+                { name: 'Art Print', minPrice: 50, maxPrice: 300, description: 'Beautiful decor for their space' }
+            ],
+            fitness: [
+                { name: 'Fitness Tracker', minPrice: 50, maxPrice: 250, description: 'Track progress toward their goals' },
+                { name: 'Yoga Mat Set', minPrice: 30, maxPrice: 100, description: 'Premium equipment for practice' },
+                { name: 'Athletic Wear', minPrice: 50, maxPrice: 200, description: 'Look good while working out' },
+                { name: 'Massage Gun', minPrice: 80, maxPrice: 300, description: 'Recovery after tough workouts' }
+            ],
+            books: [
+                { name: 'E-Reader', minPrice: 100, maxPrice: 300, description: 'Thousands of books in one device' },
+                { name: 'Book Subscription Box', minPrice: 30, maxPrice: 100, description: 'New reads delivered monthly' },
+                { name: 'First Edition Book', minPrice: 50, maxPrice: 500, description: 'A collector\'s item they\'ll cherish' },
+                { name: 'Audiobook Subscription', minPrice: 50, maxPrice: 150, description: 'Stories on the go' }
+            ],
+            food: [
+                { name: 'Gourmet Food Basket', minPrice: 50, maxPrice: 200, description: 'Delicious treats to enjoy' },
+                { name: 'Cooking Class', minPrice: 75, maxPrice: 250, description: 'Learn new culinary skills together' },
+                { name: 'Restaurant Gift Card', minPrice: 50, maxPrice: 300, description: 'A special dinner out' },
+                { name: 'Wine/Spirits Collection', minPrice: 40, maxPrice: 200, description: 'Premium drinks to savor' }
+            ],
+            hobby: [
+                { name: 'Craft Supply Kit', minPrice: 30, maxPrice: 150, description: 'Everything needed for their passion' },
+                { name: 'Workshop Class', minPrice: 50, maxPrice: 200, description: 'Learn something new together' },
+                { name: 'Hobby Equipment Upgrade', minPrice: 100, maxPrice: 500, description: 'Take their hobby to the next level' },
+                { name: 'Subscription Box', minPrice: 25, maxPrice: 100, description: 'Monthly supplies for their interest' }
+            ],
+            travel: [
+                { name: 'Quality Luggage', minPrice: 100, maxPrice: 400, description: 'Travel in style' },
+                { name: 'Weekend Getaway', minPrice: 200, maxPrice: 1000, description: 'Create memories together' },
+                { name: 'Travel Accessories Set', minPrice: 50, maxPrice: 150, description: 'Everything for the perfect trip' },
+                { name: 'Experience Voucher', minPrice: 75, maxPrice: 300, description: 'Adventure awaits' }
+            ],
+            jewelry: [
+                { name: 'Necklace', minPrice: 50, maxPrice: 500, description: 'An elegant piece they\'ll adore' },
+                { name: 'Bracelet', minPrice: 40, maxPrice: 300, description: 'A beautiful daily reminder of your love' },
+                { name: 'Earrings', minPrice: 30, maxPrice: 400, description: 'Sparkle and shine' },
+                { name: 'Custom Engraved Jewelry', minPrice: 75, maxPrice: 350, description: 'Personalized and meaningful' }
+            ]
+        };
+
+        function initializePurchaseFields() {
+            const grid = document.getElementById('purchaseGrid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const div = document.createElement('div');
+                div.className = 'purchase-item';
+                div.innerHTML = `
+                    <span class="purchase-number">${i}</span>
+                    <input type="text" id="purchase${i}" placeholder="What did they buy?">
+                    <select id="category${i}">
+                        <option value="">Category</option>
+                        ${categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
+                    </select>
+                `;
+                grid.appendChild(div);
+            }
+        }
+
+        function analyzePurchases() {
+            const categoryCount = {};
+            let totalPurchases = 0;
+
+            for (let i = 1; i <= 10; i++) {
+                const purchase = document.getElementById(`purchase${i}`).value.trim();
+                const category = document.getElementById(`category${i}`).value;
+
+                if (purchase && category) {
+                    categoryCount[category] = (categoryCount[category] || 0) + 1;
+                    totalPurchases++;
+                }
+            }
+
+            return { categoryCount, totalPurchases };
+        }
+
+        function getSuggestions(categoryCount, budget) {
+            const sortedCategories = Object.entries(categoryCount)
+                .sort((a, b) => b[1] - a[1]);
+
+            const suggestions = [];
+            const addedGifts = new Set();
+
+            for (const [category] of sortedCategories) {
+                const categoryGifts = giftIdeas[category] || [];
+
+                for (const gift of categoryGifts) {
+                    if (!addedGifts.has(gift.name) && budget >= gift.minPrice) {
+                        const adjustedMax = Math.min(gift.maxPrice, budget);
+                        suggestions.push({
+                            ...gift,
+                            category,
+                            priceRange: `$${gift.minPrice} - $${adjustedMax}`
+                        });
+                        addedGifts.add(gift.name);
+                    }
+                }
+            }
+
+            return suggestions.slice(0, 5);
+        }
+
+        function displayResults(analysis, budget) {
+            const { categoryCount, totalPurchases } = analysis;
+
+            if (totalPurchases < 3) {
+                alert('Please enter at least 3 purchases with categories for better recommendations.');
+                return;
+            }
+
+            const interestList = document.getElementById('interestList');
+            const sortedCategories = Object.entries(categoryCount).sort((a, b) => b[1] - a[1]);
+
+            interestList.innerHTML = sortedCategories.map(([cat, count]) => {
+                const percentage = (count / totalPurchases) * 100;
+                const label = categories.find(c => c.value === cat)?.label || cat;
+                return `
+                    <li>
+                        <span>${label}</span>
+                        <span>${count} purchase${count > 1 ? 's' : ''}</span>
+                        <div class="bar"><div class="bar-fill" style="width: ${percentage}%"></div></div>
+                    </li>
+                `;
+            }).join('');
+
+            const suggestions = getSuggestions(categoryCount, budget);
+            const suggestionsDiv = document.getElementById('suggestions');
+
+            if (suggestions.length === 0) {
+                suggestionsDiv.innerHTML = `
+                    <div class="suggestion">
+                        <h3>Budget Too Low</h3>
+                        <p>We couldn't find gift ideas within your budget of $${budget}. Try increasing your budget for more options.</p>
+                    </div>
+                `;
+            } else {
+                suggestionsDiv.innerHTML = suggestions.map((gift, index) => `
+                    <div class="suggestion">
+                        <h3>${index + 1}. ${gift.name}</h3>
+                        <p>${gift.description}</p>
+                        <p class="price-range">Price Range: ${gift.priceRange}</p>
+                        <div class="interest-tags">
+                            <span class="tag">${categories.find(c => c.value === gift.category)?.label || gift.category}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('suggesterForm').reset();
+            document.getElementById('results').classList.remove('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('suggesterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const budget = parseFloat(document.getElementById('budget').value);
+            if (!budget || budget <= 0) {
+                alert('Please enter a valid budget.');
+                return;
+            }
+
+            const analysis = analyzePurchases();
+            displayResults(analysis, budget);
+        });
+
+        initializePurchaseFields();
+    </script>
+</body>
+</html>
