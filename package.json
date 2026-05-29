@@ -1,0 +1,24 @@
+{
+  "name": "carebridge-health-cloud",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Care coordination interface for a multi-state behavioral health company on Salesforce Health Cloud",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:smoke": "node test/ssr-smoke.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.460.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.13.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
