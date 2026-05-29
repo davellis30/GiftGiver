@@ -35,6 +35,25 @@ try {
       console.error('   ', err.message)
     }
   }
+
+  // Mobile-only component: render the touch card directly (route SSR uses the
+  // desktop table branch because matchMedia is absent server-side).
+  try {
+    const { PatientCard } = await vite.ssrLoadModule('/src/components/PatientCard.jsx')
+    const { patients } = await vite.ssrLoadModule('/src/data/mockData.js')
+    const html = renderToString(
+      React.createElement(
+        StaticRouter,
+        { location: '/' },
+        React.createElement(PatientCard, { patient: patients[0], showNextAppt: true }),
+      ),
+    )
+    console.log(`OK   <PatientCard> (mobile)  (${html.length} bytes)`)
+  } catch (err) {
+    failed = true
+    console.error('FAIL <PatientCard> (mobile)')
+    console.error('   ', err.message)
+  }
 } catch (err) {
   failed = true
   console.error('Module load failed:', err.message)

@@ -6,10 +6,13 @@ import { getPatientsForCoordinator } from '../../data/selectors'
 import { CONTACT_STATUSES, PAYERS } from '../../data/mockData'
 import { StatusPill, AcuityTag, Avatar } from '../../components/ui'
 import { ContactActionButtons } from '../../components/ContactActions'
+import { PatientCard } from '../../components/PatientCard'
+import { useIsMobile } from '../../utils/useMediaQuery'
 import { relativeDays, formatDate, initialsColor } from '../../utils/format'
 
 export default function PatientPanel() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const { patients, currentCoordinatorId } = useStore()
   const myPatients = useMemo(
     () => getPatientsForCoordinator(patients, currentCoordinatorId),
@@ -100,6 +103,19 @@ export default function PatientPanel() {
             of {myPatients.length} total
           </span>
         </div>
+        {isMobile ? (
+          <div className="card-pad pcard-list">
+            {filtered.slice(0, 60).map((p) => (
+              <PatientCard key={p.id} patient={p} showNextAppt />
+            ))}
+            {filtered.length === 0 && <div className="empty">No patients match your filters.</div>}
+            {filtered.length > 60 && (
+              <div className="muted" style={{ textAlign: 'center', fontSize: 13, paddingTop: 8 }}>
+                Showing 60 of {filtered.length}. Narrow your search to see more.
+              </div>
+            )}
+          </div>
+        ) : (
         <div className="table-wrap">
           <table>
             <thead>
@@ -152,6 +168,7 @@ export default function PatientPanel() {
             </div>
           )}
         </div>
+        )}
       </div>
     </>
   )

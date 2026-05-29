@@ -27,6 +27,8 @@ import { getPatientsForCoordinator, statusBreakdown } from '../../data/selectors
 import { STATUS_META, CONTACT_STATUSES } from '../../data/mockData'
 import { StatCard, StatusPill, AcuityTag, Avatar } from '../../components/ui'
 import { ContactActionButtons } from '../../components/ContactActions'
+import { PatientCard } from '../../components/PatientCard'
+import { useIsMobile } from '../../utils/useMediaQuery'
 import { relativeDays, initialsColor } from '../../utils/format'
 
 function daysSince(iso) {
@@ -36,6 +38,7 @@ function daysSince(iso) {
 
 export default function OutreachDashboard() {
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
   const { patients, currentCoordinatorId } = useStore()
   const myPatients = useMemo(
     () => getPatientsForCoordinator(patients, currentCoordinatorId),
@@ -150,7 +153,7 @@ export default function OutreachDashboard() {
             <h3>Contactability breakdown</h3>
             <span className="hint">Click a status to filter the queue</span>
           </div>
-          <div className="card-pad" style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <div className="card-pad" style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
             <div style={{ width: 200, height: 200, position: 'relative' }}>
               <ResponsiveContainer>
                 <PieChart>
@@ -276,6 +279,14 @@ export default function OutreachDashboard() {
           <h3>{queueTitle}</h3>
           <span className="hint">{queue.length} patients · sorted by acuity & recency</span>
         </div>
+        {isMobile ? (
+          <div className="card-pad pcard-list">
+            {queue.slice(0, 40).map((p) => (
+              <PatientCard key={p.id} patient={p} />
+            ))}
+            {queue.length === 0 && <div className="empty">No patients in this view 🎉</div>}
+          </div>
+        ) : (
         <div className="table-wrap">
           <table>
             <thead>
@@ -341,6 +352,7 @@ export default function OutreachDashboard() {
             </div>
           )}
         </div>
+        )}
       </div>
     </>
   )

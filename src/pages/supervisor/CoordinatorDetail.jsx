@@ -73,7 +73,7 @@ export default function CoordinatorDetail() {
       <div className="grid grid-3" style={{ marginTop: 18, alignItems: 'start' }}>
         <div className="card">
           <div className="card-head"><h3>Panel contactability</h3></div>
-          <div className="card-pad" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="card-pad" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
             <div style={{ width: 150, height: 150 }}>
               <ResponsiveContainer>
                 <PieChart>

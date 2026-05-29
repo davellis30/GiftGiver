@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, NavLink, Navigate, useLocation } from 'react-router-dom'
 import {
   HeartPulse,
@@ -9,6 +9,7 @@ import {
   Map,
   Bell,
   Search,
+  Menu,
 } from 'lucide-react'
 import { StoreProvider, useStore } from './store'
 import { ToastProvider, Avatar } from './components/ui'
@@ -22,7 +23,7 @@ import Schedule from './pages/coordinator/Schedule'
 import SupervisorDashboard from './pages/supervisor/SupervisorDashboard'
 import CoordinatorDetail from './pages/supervisor/CoordinatorDetail'
 
-function Sidebar({ role, setRole }) {
+function Sidebar({ role, setRole, open }) {
   const { patients, currentCoordinatorId } = useStore()
   const myPatients = getPatientsForCoordinator(patients, currentCoordinatorId)
   const needAttention = myPatients.filter((p) =>
@@ -30,7 +31,7 @@ function Sidebar({ role, setRole }) {
   ).length
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${open ? 'open' : ''}`}>
       <div className="brand">
         <div className="brand-mark">
           <HeartPulse size={20} />
@@ -91,7 +92,7 @@ function Sidebar({ role, setRole }) {
   )
 }
 
-function Topbar({ role }) {
+function Topbar({ role, onMenu }) {
   const { currentCoordinator } = useStore()
   const person =
     role === 'supervisor'
@@ -100,6 +101,9 @@ function Topbar({ role }) {
 
   return (
     <header className="topbar">
+      <button className="btn btn-ghost btn-icon menu-btn" onClick={onMenu} aria-label="Open menu">
+        <Menu size={20} />
+      </button>
       <div className="search" style={{ maxWidth: 320 }}>
         <Search size={16} />
         <input placeholder="Search patients, coordinators…" />
@@ -126,12 +130,22 @@ function Shell() {
   const [role, setRole] = useState(
     location.pathname.startsWith('/supervisor') ? 'supervisor' : 'coordinator',
   )
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
+  // Close the mobile drawer whenever the route changes
+  useEffect(() => {
+    setDrawerOpen(false)
+  }, [location.pathname])
 
   return (
     <div className="app-shell">
-      <Sidebar role={role} setRole={setRole} />
+      <Sidebar role={role} setRole={setRole} open={drawerOpen} />
+      <div
+        className={`drawer-backdrop ${drawerOpen ? 'show' : ''}`}
+        onClick={() => setDrawerOpen(false)}
+      />
       <div className="main">
-        <Topbar role={role} />
+        <Topbar role={role} onMenu={() => setDrawerOpen((v) => !v)} />
         <main className="content">
           <Routes>
             <Route path="/" element={<Navigate to="/coordinator/outreach" replace />} />
